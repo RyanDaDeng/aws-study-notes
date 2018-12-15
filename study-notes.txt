@@ -1,0 +1,131 @@
+RDS
+
+Relational database
+Support
+Sql server
+Oracle
+Mysql
+Postgresql
+Amazon aurora
+mariadb
+
+Non-relational database
+
+dynamoDB
+
+
+Data warehousing
+相当于你要做report的时候，比较费时费资源的query不好在生产服务器跑，可以先把数据全部存入到data warehousing，然后在里面进行查询
+
+OLTP vs OLAP
+OLTP 就是transaction，客户增删改查的操作
+
+OLAP就是分析类的analytics的更复杂查询，data warehousing就是主要提升这些查询的速度,REDSHIFT
+
+
+Elasticache
+
+Redis
+memcached
+
+
+EC2 - RDS 的结合
+如果ec2要连rds首先要确定rds的security group里面允许ec2的流量，可以配置ec2的security group 作为source
+
+
+RDS - Back Ups, Multi-AZ & Read Replicas
+
+
+Backups:
+Automated Backups
+说白了就是windows的系统还原或者mac的时间机器，不过backup有预留时间，备份不是永久的，保存有当天的全部transaction log以及整天的backup
+
+数据会存在s3，s3的免费容量大小取决于你的rds大小,备份的时候可能会让你的i/o延迟很久
+
+Database snapshots
+是人为的手动保存，如果你rds的instance被删除了，你手动备份的还会在，automated backup就不会保存。
+
+
+Restoring Backups:
+简单来说，当你还原的时候，aws会生成一个新的rds instance，新的endpoint
+
+
+Rds - Encryption
+Aws的key management service (KMS)，会把rds里面的数据库进行加密，加密的方法就是首先要有snapshot然后对做一个snapshot的copy，然后在对这个copy进行加密
+
+
+
+S3  Simple Storage Service - object based storage
+
+
+Files form 0 byte to 5tb
+
+Unlimited storage
+
+Stores in buckets
+
+
+Can read immediately after uploads
+But if you modify or delete, it takes some time.  - Eventual Consistency
+
+Key-value store
+
+Can save 
+key, 
+Value,
+ Version id, 
+metadata, 
+Subresources - bucket poiclies, access control lists, cross origin resource sharing (CORS)
+Transfer acceleration
+IA(infrequently accessed): pay the retrieval fee whenever you access the data, only for those files less frequently read
+
+Reduced redundancy storage - it's easily to repoduce
+
+Standard IA
+One-zone IA: 99.5% availability
+
+Glacier: for archival only, for historical data, no real-time access, 4-5 hours access
+
+Intelligent Tiering 
+Unkown or unpredictable access patterns
+Frequent and infrequent access
+Automatically moves your data to most cost-effective
+自动分配，比如30天没看file就说嘛infrequent
+
+It has a small monthly fee for monitoring/automation
+
+Charged for:
+Storage per GB
+Requests
+Storage management - analytics, object tags, inventory
+Data management pricing - data transferred out of s3 (download file from aws)
+Transfer acceleration 
+
+FAQs: https://aws.amazon.com/s3/faqs/
+
+
+S3 - security
+
+By default its PRIVATE
+
+Bucket policies: 就是给文件夹权限
+Access control listy：就是单独文件权限
+
+初始的时候，aws不会让你有public的权限，如果你上传了一个文件，然后public是看不了的，你要么改access control list，然后之后的file就可以看了，之前上传的你还是看不了，需要更改bucket policy
+
+S3 Encryption
+In transit:
+在传送的时候加密SSL/TLS (HTTPS)
+At rest:
+Server Side encryption
+SSE - S3
+SSE-KMS
+SSE-C
+
+Client Side Encryption
+
+上传的时候加密的时候要在头部加上x-amz-server-side-encrption, 有两种选项一个是SSE-S3和sse-kms
+
+是否需要加密也可以在bucket policy中进行设置，如果没有这个值，就会被拒绝
+操作其实就是设置一个json的权限，然后设置头部值不等于你的加密方法就可以了。。在bucket policy中
+
